@@ -17,42 +17,42 @@ import numpy as np
 train=pd.read_csv('/app/train.csv')
 test=pd.read_csv('/app/test.csv')
 
-# train_set=train.drop('Machine failure',axis=1 )
+train_set=train.drop('Machine failure',axis=1 )
 
-# y=train['Machine failure']
+y=train['Machine failure']
 
-# train_set.drop('id',axis=1,inplace=True)
-# test.drop('id',axis=1,inplace=True)
-
-
-# correlation_matrix = train_set.corr(numeric_only=True)
+train_set.drop('id',axis=1,inplace=True)
+test.drop('id',axis=1,inplace=True)
 
 
-# categorical_columns = train_set.select_dtypes(include=['object']).columns
-# mode_values = train_set[categorical_columns].mode().iloc[0]
-# encoder = TargetEncoder(cols=categorical_columns, handle_unknown='value')
-# train_set_encoded = encoder.fit_transform(train_set, y)
-# test_set_encoded = encoder.transform(test)
+correlation_matrix = train_set.corr(numeric_only=True)
 
 
-# for column in train_set_encoded.columns:
-#     value_counts = train_set_encoded[column].value_counts()
-#     print(f"Value counts for column '{column}':")
-#     print(value_counts)
-#     print()
-
-# train_set_encoded['Rotational speed [rpm]'] = np.log1p(train_set['Rotational speed [rpm]'])
-
-# test_set_encoded['Rotational speed [rpm]'] = np.log1p(train_set['Rotational speed [rpm]'])
-
-# model = LogisticRegression(max_iter=1000)
-# cv_scores_roc_auc = cross_val_score(model, train_set_encoded, y, cv=kfold, scoring='roc_auc')
+categorical_columns = train_set.select_dtypes(include=['object']).columns
+mode_values = train_set[categorical_columns].mode().iloc[0]
+encoder = TargetEncoder(cols=categorical_columns, handle_unknown='value')
+train_set_encoded = encoder.fit_transform(train_set, y)
+test_set_encoded = encoder.transform(test)
 
 
-# print("Cross-validation ROC AUC scores:", cv_scores_roc_auc)
-# print("Mean ROC AUC score:", np.mean(cv_scores_roc_auc))
+for column in train_set_encoded.columns:
+    value_counts = train_set_encoded[column].value_counts()
+    print(f"Value counts for column '{column}':")
+    print(value_counts)
+    print()
+
+train_set_encoded['Rotational speed [rpm]'] = np.log1p(train_set['Rotational speed [rpm]'])
+
+test_set_encoded['Rotational speed [rpm]'] = np.log1p(train_set['Rotational speed [rpm]'])
+
+model = LogisticRegression(max_iter=1000)
+cv_scores_roc_auc = cross_val_score(model, train_set_encoded, y, cv=kfold, scoring='roc_auc')
 
 
-# model.fit(train_set_encoded, y)
-# probabilities = model.predict_proba(test_set_encoded)
-# print(probabilities)
+print("Cross-validation ROC AUC scores:", cv_scores_roc_auc)
+print("Mean ROC AUC score:", np.mean(cv_scores_roc_auc))
+
+
+model.fit(train_set_encoded, y)
+probabilities = model.predict_proba(test_set_encoded)
+print(probabilities)
